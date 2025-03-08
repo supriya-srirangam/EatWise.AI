@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eat Wise.AI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="./styles/styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand text-light" href="#">Eat Wise.AI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link text-light" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="#">About</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="#">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-flex">
+        <div class="hero">
+            <h1>Analyze Your Food!</h1>
+            <p>Upload an image <strong>or</strong> enter ingredients manually.</p>
+            <input type="file" id="foodImage" class="form-control mb-3">
+            <p><strong>or</strong></p>
+            <textarea id="ingredientsInput" class="form-control mb-3" placeholder="Enter ingredients (e.g., sugar, salt, oil)" ></textarea>
+            <button class="btn btn-analyze" onclick="analyzeFood()">Analyze</button>
+            <div class="spinner-border text-primary" id="loadingSpinner" style="display: none;"></div>
+        </div>
+
+        <div class="hidden results" id="resultsSection">
+            <h2>Results</h2>
+            <p><i id="healthScoreIcon" class="fas fa-star"></i> <strong>Health Score:</strong> <span id="healthScore">-</span></p>
+            <p><i class="fas fa-exclamation-triangle icon-yellow"></i> <strong>Warnings:</strong> <span id="warnings">-</span></p>
+            <p><i class="fas fa-check-circle icon-green"></i> <strong>Alternatives:</strong> <span id="alternatives">-</span></p>
+            <button class="btn btn-analyze" onclick="resetAnalysis()">Try Another Food</button>
+        </div>
+    </div>
+
+    <section id="how-it-works" class="py-5 how-it-works">
+        <div class="container">
+            <h2 class="text-center mb-4">How It Works</h2>
+            <div class="row">
+                <div class="col-md-3 step">
+                    <img src="images/upload.png" alt="Upload" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h3>Upload</h3>
+                    <p>Upload a photo or enter ingredients.</p>
+                </div>
+                <div class="col-md-3 step">
+                    <img src="images/smart-farm.png" alt="Analyze" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h3>Analyze</h3>
+                    <p>Our AI analyzes your food.</p>
+                </div>
+                <div class="col-md-3 step">
+                    <img src="images/score.png" alt="Get Score" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h3>Get Score</h3>
+                    <p>Receive a nutritional score.</p>
+                </div>
+                <div class="col-md-3 step">
+                    <img src="images/healthy-food.png" alt="See Alternatives" class="img-fluid mb-3" style="max-width: 80px;">
+                    <h3>See Alternatives</h3>
+                    <p>Discover healthier options.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>&copy; 2025 Eat Wise.AI - All Rights Reserved</p>
+    </footer>
+
+    <script>
+        async function analyzeFood() {
+            const ingredients = document.getElementById("ingredientsInput").value.trim();
+            const analyzeButton = document.querySelector(".btn-analyze");
+            const loadingSpinner = document.getElementById("loadingSpinner");
+            const resultsSection = document.getElementById("resultsSection");
+            const healthScoreIcon = document.getElementById("healthScoreIcon");
+            const resultsContainer = document.getElementById("resultsSection");
+            resultsContainer.classList.remove("visible"); // Hide results before new analysis
+            if (!ingredients.trim()) {
+                alert("Please enter ingredients.");
+                return;
+            }
+            // Disable button to prevent multiple submissions
+            analyzeButton.disabled = true;
+            analyzeButton.innerText = "Analyzing...";
+            // Show loading spinner
+            loadingSpinner.style.display = "inline-block";
+            // Clear previous results
+            document.getElementById("healthScore").innerText = "-";
+            document.getElementById("warnings").innerText = "-";
+            document.getElementById("alternatives").innerText = "-";
+            // Hide results while loading
+            resultsSection.style.display = "none";
+            healthScoreIcon.className = "fas fa-star"; // Reset icon color
+
+            const apiKey = "AIzaSyCH9UMD7vJ_iuzYFmyT2VGrdyqQqd9cVjE"; // Replace with actual API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+
+            let requestBody = {
+                contents: [
+                    {
+                        role: "model",
+                        parts: [
+                            {
+                                text: `You are an AI nutrition assistant named Eat Wise AI. Your goal is to analyze food ingredients and rate their healthiness based on WHO, USDA, and OpenFoodFacts guidelines.
+
+Objective:
+- Analyze food ingredients.
+- Assign a health score (0-10).
+- Warn about unhealthy components.
+- Suggest alternatives.
+
+Constraints:
+1. Provide concise, structured, and evidence-based responses.
+2. Avoid assumptions beyond ingredient analysis.
+3. Stick to well-documented nutrition guidelines.
+
+Persona:
+- Supportive and professional nutrition expert.
+- User-friendly and informative.
+
+Tone:
+- Encouraging, neutral, and informative.
+
+Context:
+- Users want to understand the health impact of food ingredients.
+
+Step-by-Step Reasoning:
+1. Identify and categorize ingredients.
+2. Compare with health guidelines.
+3. Compute a health score (0-10).
+4. Provide structured feedback.
+
+Expected Response Format:
+- **Health Score:** X/10
+- **Warnings:** [List of concerns]
+- **Alternatives:** [Healthier options]
+
+Examples:
+1️⃣ **Input:** "Sugar, Palm Oil, Artificial Flavors"
+       - **Output:** "Health Score: 3/10, Warnings: [High sugar, artificial additives], Alternatives: [Olive oil, honey, natural flavors]"
+
+2️⃣ **Input:** "Oats, Almonds, Honey"
+       - **Output:** "Health Score: 9/10, Warnings: [None], Alternatives: [None needed]"`
+                            }
+                        ]
+                    },
+                    {
+                        role: "user",
+                        parts: [
+                            {
+                                text: `Analyze the following food ingredients:
+
+Ingredients: ${ingredients}
+
+Provide output strictly in the structured format mentioned above.`
+                            }
+                        ]
+                    }
+                ]
+            };
+
+            console.log("Request Body:", JSON.stringify(requestBody, null, 2));
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+                console.log("Full API Response:", data); // Debugging line
+
+                if (data && Array.isArray(data.candidates) && data.candidates.length > 0) {
+                    const candidate = data.candidates[0]; // Get the first candidate
+                    if (candidate.content && Array.isArray(candidate.content.parts) && candidate.content.parts.length > 0) {
+                        const responseText = candidate.content.parts[0].text; // Get the text from the first part
+                    console.log("Raw API Response:", responseText);
+                    // Split response by lines
+                    const resultLines = responseText.split("\n").map(line => line.trim()).filter(line => line !== "");
+
+                    // Extract relevant sections
+                    const healthScoreMatch = responseText.match(/\*\*Health Score:\*\*\s*(\d+)/);
+                    console.log("HealthScore", healthScoreMatch);
+                    const warnings = resultLines.find(line => line.startsWith("**Warnings:**")) || "N/A";
+                    const alternatives = resultLines.find(line => line.startsWith("**Alternatives:**")) || "N/A";
+                    const healthScore = healthScoreMatch ? parseInt(healthScoreMatch[1]) : null;
+                    console.log("HealthScore", healthScore);
+                    // Remove bold markers and update UI
+                    document.getElementById("healthScore").innerText = healthScore;
+                    document.getElementById("warnings").innerText = warnings.replace("**Warnings:**", "").trim().replace(/\[|\]/g, "");
+                    document.getElementById("alternatives").innerText = alternatives.replace("**Alternatives:**", "").trim().replace(/\[|\]/g, "");
+                    // Update health score icon color
+                    healthScoreIcon.classList.remove("text-danger", "text-warning", "text-success");
+                    if (healthScore !== null) {
+                        if (healthScore <= 3) {
+                            healthScoreIcon.classList.add("text-danger"); // Red
+                        } else if (healthScore <= 6) {
+                            healthScoreIcon.classList.add("text-warning"); // Yellow
+                        } else {
+                            healthScoreIcon.classList.add("text-success"); // Green
+                        }
+                    }
+                    // Show results
+                    resultsSection.style.display = "block";
+                } else {
+                    document.getElementById("healthScore").innerText = "Error analyzing food.";
+                    document.getElementById("warnings").innerText = "-";
+                    document.getElementById("alternatives").innerText = "-";
+
+                    resultsSection.style.display = "block";
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("healthScore").innerText = "Failed to fetch results.";
+                document.getElementById("warnings").innerText = "-";
+                document.getElementById("alternatives").innerText = "-";
+            }
+            // Hide loading spinner and enable button after API response
+            loadingSpinner.style.display = "none";
+            analyzeButton.disabled = false;
+            analyzeButton.innerText = "Analyze";
+
+            setTimeout(() => {
+                resultsContainer.classList.add("visible"); // Fade in results
+            }, 100);
+        }
+
+        function resetAnalysis() {
+            document.getElementById("ingredientsInput").value = "";
+            document.getElementById("resultsSection").style.display = "none";
+            const analyzeButton = document.querySelector(".btn-analyze");
+            analyzeButton.disabled = false;
+            analyzeButton.innerText = "Analyze";
+        }
+    </script>
+</body>
+</html>
