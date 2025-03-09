@@ -61,6 +61,8 @@
         background-color: #6166e8;
         color: black;
         border-radius: 8px;
+        height: 30px;
+        width: 100px;
         padding: 10px;
         transition: background-color 0.3s, transform 0.2s;
     }
