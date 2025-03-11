@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="config.js"></script>
     <link rel="stylesheet" href="./styles/styles.css">
 </head>
 <body>
@@ -21,7 +22,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active nav-items" aria-current="page" href="#">Home</a>
+                        <a class="nav-link active nav-items" aria-current="page" href="#home">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active nav-items" href="#about-us">About Us</a>
@@ -61,7 +62,7 @@
     <section class="about-us" id="about-us">
         <div class="container">
             <div class="about-image">
-                <img src="./images/about-us-section-image.jpg" alt="Healthy Food Analysis">
+                <img src="./images/healthy_food.jpg" alt="Healthy Food Analysis">
             </div>
             <!-- Right Side: Content -->
             <div class="about-content">
@@ -180,8 +181,8 @@
   </section>  
  <!-- pricing section ending -->
             <!-- testimonials section start -->
-             <div class="testimonials-section" id="testimonails">
-              <h2 class="testimonials-section-heading">Testimonials</h2>
+            <div class="testimonials" id="testimonials">
+              <h2 class="testimonials-section-heading text-center">Testimonials</h2>
               <div class="testimonials-underline-alignment">
               <hr class="testimonials-section-underline"></hr>
             </div>
@@ -343,7 +344,7 @@
     resultsSection.style.display = "none";
 
     try {
-        const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=AIzaSyCH9UMD7vJ_iuzYFmyT2VGrdyqQqd9cVjE`; // Replace with your API key
+        const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${CONFIG.API_KEY}`; // Replace with your API key
 
         let requestBody = {
                 contents: [
@@ -448,7 +449,7 @@
         const alternatives = alternativesMatch ? alternativesMatch[1].replace(/\[|\]/g, "") : "None";
 
         // 🔹 **Update UI with extracted data**
-        document.getElementById("healthScore").innerText = healthScore;
+        document.getElementById("healthScore").innerText = healthScore !== "-" ? `${healthScore}/10` : "-";
         document.getElementById("warnings").innerText = warnings;
         document.getElementById("alternatives").innerText = alternatives;
 
