@@ -4,14 +4,61 @@
         overflow-x: hidden;
     }
 
-    .navbar {
-        background-color: #9ff096;
-        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-        padding: 15px;
+/* Navbar Styling */
+.navbar {
+    background-color: #a5d2ff !important; /* Dark Background */
+    padding: 12px 0;
+}
+
+/* Logo Styling */
+.navbar-brand img {
+    width: 50px; /* Slightly larger for better visibility */
+    height: 50px;
+    border-radius: 5px; /* Optional: Rounded corners */
+    object-fit: contain; /* Ensures image scales well */
+}
+
+/* Brand Text Styling */
+.navbar-brand span {
+    font-size: 1.5rem; /* Bigger and bolder text */
+    font-weight: bold;
+    color: rgb(3, 3, 3);
+}
+
+/* Navbar Links */
+.navbar-nav .nav-link {
+    color: rgb(5, 5, 5) !important;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-right: 15px; /* Adds space between links */
+    transition: color 0.3s ease-in-out;
+}
+
+/* Active and Hover Effects */
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #f8c102 !important; /* Gold-like color on hover/active */
+}
+
+/* Mobile Styling */
+@media (max-width: 991px) {
+    .navbar-collapse {
+        background: #212529; /* Keeps dark background on mobile */
+        padding: 10px;
+        border-radius: 8px;
     }
-    .nav-link-text-light{
-        color:green;
+
+    .navbar-nav {
+        text-align: center;
     }
+
+    .navbar-nav .nav-link {
+        display: block;
+        padding: 10px;
+    }
+}
+
+
     .icon-green {
         color: green;
     }
@@ -36,17 +83,20 @@
     }
 
     .hero, .results {
-        flex: 1;
-        padding: 30px;
-        background-color: #9ff096;
-        border-radius: 10px;
+        justify-content: space-around;
+        flex: 0.8;
+        padding: 50px 20px;
+        background: linear-gradient(135deg, #32a852, #3dc9b3);
+        border-radius: 20px;
         margin: 10px;
         text-align: center;
         transition: transform 0.3s ease-in-out, opacity 0.5s ease-in-out;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        border: 1px solid #80d080;
     }
     .logo{
-        height:70px;
-        width: 75px;
+        height:100px;
+        width: 100px;
     }
     .results {
         background-color: #9ff096;
@@ -58,6 +108,9 @@
         transform: translateY(10px);
         transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
     }
+    .text-danger { color: #ff4d4d; }
+    .text-warning { color: #ffcc00; }
+    .text-success { color: #4CAF50; }
 
     .visible {
         opacity: 1;
@@ -69,11 +122,12 @@
         text-align: center;
     }
     .btn-analyze {
+        white-space: nowrap;
         background-color: #6166e8;
         color: black;
         border-radius: 6px;
-        height: 30px;
-        width: 100px;
+        height: 40px;
+        width: 200px;
         border-width: 0px;
         text-align: center;
         font-size: 15px;
@@ -344,4 +398,3 @@
         width: 100%;
     }
 }
-
