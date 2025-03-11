@@ -3,62 +3,24 @@
         font-family: 'Arial', sans-serif;
         overflow-x: hidden;
     }
-
-/* Navbar Styling */
-.navbar {
-    background-color: #a5d2ff !important; /* Dark Background */
-    padding: 12px 0;
-}
-
-/* Logo Styling */
-.navbar-brand img {
-    width: 50px; /* Slightly larger for better visibility */
-    height: 50px;
-    border-radius: 5px; /* Optional: Rounded corners */
-    object-fit: contain; /* Ensures image scales well */
-}
-
-/* Brand Text Styling */
-.navbar-brand span {
-    font-size: 1.5rem; /* Bigger and bolder text */
-    font-weight: bold;
-    color: rgb(3, 3, 3);
-}
-
-/* Navbar Links */
-.navbar-nav .nav-link {
-    color: rgb(5, 5, 5) !important;
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-right: 15px; /* Adds space between links */
-    transition: color 0.3s ease-in-out;
-}
-
-/* Active and Hover Effects */
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
-    color: #f8c102 !important; /* Gold-like color on hover/active */
-}
-
-/* Mobile Styling */
-@media (max-width: 991px) {
-    .navbar-collapse {
-        background: #212529; /* Keeps dark background on mobile */
-        padding: 10px;
-        border-radius: 8px;
+    .logo{
+        height: 90px;
+        width: 105px;
+        margin-left: 6px;
     }
-
-    .navbar-nav {
-        text-align: center;
+    .nav-items{
+        color: #232323;
+        font-weight: bold;
+        font-size: 17.5px;
     }
-
-    .navbar-nav .nav-link {
-        display: block;
-        padding: 10px;
-    }
+    .special{
+        background-color:#6166e8;
+        padding: 5px;
+        border-radius: 7px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-right: 5px;
 }
-
-
     .icon-green {
         color: green;
     }
@@ -73,7 +35,7 @@
 
     .container-flex {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         padding: 20px;
         transition: all 0.3s ease-in-out;
     }
@@ -145,7 +107,9 @@
         text-align: center;
         padding: 10px;
     }
-
+.how-it-works-section{
+    margin-bottom: 23px;
+}
     .how-it-works {
         margin: 20px;
         text-align: center;
@@ -158,11 +122,11 @@
     font-weight: bold;
 }
   
-    .how-it-works-cards-alignment{
+    /* .how-it-works-cards-alignment{
         display: flex;
         flex-direction:row;
         justify-content: space-around;
-    }
+    } */
     .how-it-works-section-cards{
       display: flex;
       flex-direction: column;
@@ -171,15 +135,18 @@
       border-color: #2ac93a;
       padding: 18px;
       padding-top: 20px;
-      height: 245px;
-      width: 245px;
+      height: 240px;
       border-radius:10px;
       margin-bottom: 10px;
       box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+      transition: all 0.3s ease-in-out;
 }
 .how-it-works-section-cards:hover{
-    height: 250px;
-    width: 250px;
+    transform: scale(1.05);
+    -webkit-transform: scale(1.05);
+    -moz-transform: scale(1.05);
+    -ms-transform: scale(1.05);
+    -o-transform: scale(1.05);
 }
 .testimonials-section{
     text-align: center;
@@ -202,20 +169,69 @@
     border-width: 4px;
     border-color:#053108;
 }
-.testimonials-section-cards-alignment{
+/* .testimonials-section-cards-alignment{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+} */
+.pricing-section {
+    background-color: #f8f9fa; /* Light Grey Background */
+  }
+  
+  .pricing-card {
+    border: 2px solid #28a745; /* Green border */
+    border-radius: 10px;
+    transition: 0.3s ease-in-out;
+    margin-left: 40px;
+    margin-bottom: 10px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  }
+  .pricing-card.featured {
+    background-color: #28a745; /* Green Background */
+    color: white;
+  }
+  
+  .pricing-card h3 {
+    font-size: 2rem;
+    color: #ff9800; /* Orange Price */
+  }
+  
+  .pricing-card .price span {
+    font-size: 1rem;
+    color: #6c757d;
+  }
+  
+  .pricing-card ul {
+    padding: 0;
+  }
+  
+  .pricing-card li {
+    padding: 5px 0;
+  }
+  
+  .pricing-card:hover {
+    transform: scale(1.02);
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    -webkit-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+    -o-transform: scale(1.02);
 }
+  
 .testimonials-section-cards{
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 17px;
-    width: 360px;
+    width: 350px;
+    margin: 8px;
     border-radius:8px;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transition: all 0.3s ease-in-out;
+}
+.testimonials-section-cards:hover{
+    transform: scale(1.05);
 }
 .testimonial-image{
     border-radius: 50%;
@@ -236,7 +252,8 @@
 /* Contact Section */
 .contact-section {
     padding: 50px 20px;
-    background-color: #E8F5E9; /* Light Green */
+    background-color: #E8F5E9; 
+    text-align: center;
 }
 
 .contact-container {
@@ -323,6 +340,10 @@
     background-color: #E8F5E9; /* Light Green */
     padding: 50px 20px;
 }
+.about-content-heading{
+    color: #FF9800; 
+    font-weight: bold;
+}
 
 .container {
     display: flex;
@@ -392,9 +413,20 @@
     .contact-container {
         flex-direction: column;
     }
+    .pricing-card {
+        margin-left: 40px;
+    }
 
     .contact-info,
     .contact-form {
         width: 100%;
     }
+}
+@media (max-width: 767px) {
+    .pricing-card {
+        border: 2px solid #28a745; 
+        border-radius: 10px;
+        transition: 0.3s ease-in-out;
+        margin-left: 40px;
+      }
 }
