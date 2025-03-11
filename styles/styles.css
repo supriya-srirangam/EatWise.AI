@@ -20,6 +20,7 @@
         font-weight: 600;
         font-size: 16px;
         margin-right: 5px;
+        max-width: 110px;
 }
     .icon-green {
         color: green;
