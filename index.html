@@ -275,10 +275,10 @@
     const reader = new FileReader();
 
     reader.onload = async function (event) {
-        const base64Image = event.target.result.split(",")[1]; // Extract base64 data
+        const base64Image = event.target.result.split(",")[1]; 
 
         previewImage.src = event.target.result;
-        previewImage.style.display = "block"; // Show preview
+        previewImage.style.display = "block"; 
 
         const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate?key=apikey`;
 
@@ -429,7 +429,6 @@
         const data = await response.json();
         console.log("API Response:", data);
 
-        // Ensure response format is valid
         if (!data || !Array.isArray(data.candidates) || data.candidates.length === 0) {
         alert("Unexpected API response format. Check console.");
         return;
@@ -438,7 +437,6 @@
         const responseText = data.candidates[0]?.content?.parts?.[0]?.text || "";
         console.log("Raw Response Text:", responseText);
 
-        // 🔹 **Extract Health Score, Warnings, and Alternatives**
         const healthScoreMatch = responseText.match(/\*\*Health Score:\*\*\s*(\d+)/);
         const healthScore = healthScoreMatch ? parseInt(healthScoreMatch[1]) : "-";
 
@@ -448,31 +446,30 @@
         const alternativesMatch = responseText.match(/\*\*Alternatives:\*\*\s*(.+)/);
         const alternatives = alternativesMatch ? alternativesMatch[1].replace(/\[|\]/g, "") : "None";
 
-        // 🔹 **Update UI with extracted data**
+        //Updating UI with extracted data
         document.getElementById("healthScore").innerText = healthScore !== "-" ? `${healthScore}/10` : "-";
         document.getElementById("warnings").innerText = warnings;
         document.getElementById("alternatives").innerText = alternatives;
 
-        // 🔹 **Update Health Score Icon Color**
+        // Updating Health Score Icon Color
         healthScoreIcon.classList.remove("text-danger", "text-warning", "text-success");
         if (healthScore !== "-") {
             if (healthScore <= 3) {
-                healthScoreIcon.classList.add("text-danger"); // Red
+                healthScoreIcon.classList.add("text-danger"); 
             } else if (healthScore <= 6) {
-                healthScoreIcon.classList.add("text-warning"); // Yellow
+                healthScoreIcon.classList.add("text-warning"); 
             } else {
-                healthScoreIcon.classList.add("text-success"); // Green
+                healthScoreIcon.classList.add("text-success"); 
             }
         }
 
-        resultsSection.classList.remove("hidden"); // Ensure it's visible
+        resultsSection.classList.remove("hidden"); 
         resultsSection.style.display = "block";
     } catch (error) {
         console.error("Error:", error);
         alert("An error occurred while analyzing. Please try again later.");
-        // Remove uploaded image preview & reset file input if error occurs
         previewImage.style.display = "none";
-        imageUpload.value = ""; // Reset file input
+        imageUpload.value = ""; 
     } finally {
         loadingSpinner.style.display = "none";
         analyzeButton.disabled = false;

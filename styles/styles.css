@@ -37,19 +37,19 @@
         color: red;
     }
 
-    .container-flex {
+    .container-flex { 
         display: flex;
         justify-content: center;
         padding: 20px;
         transition: all 0.3s ease-in-out;
+        flex-wrap: wrap;  
     }
-
+    
     .hero:hover, .results:hover {
         transform: scale(1.02);
     }
-
+    
     .hero, .results {
-        justify-content: space-around;
         flex: 0.8;
         padding: 50px 20px;
         background: linear-gradient(135deg, #32a852, #3dc9b3);
@@ -185,11 +185,11 @@
     justify-content: space-around;
 } */
 .pricing-section {
-    background-color: #f8f9fa; /* Light Grey Background */
+    background-color: #f8f9fa; 
   }
   
   .pricing-card {
-    border: 2px solid #28a745; /* Green border */
+    border: 2px solid #28a745; 
     border-radius: 10px;
     transition: 0.3s ease-in-out;
     margin-left: 40px;
@@ -197,13 +197,13 @@
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   }
   .pricing-card.featured {
-    background-color: #28a745; /* Green Background */
+    background-color: #28a745; 
     color: white;
   }
   
   .pricing-card h3 {
     font-size: 2rem;
-    color: #ff9800; /* Orange Price */
+    color: #ff9800; 
   }
   
   .pricing-card .price span {
@@ -222,10 +222,6 @@
   .pricing-card:hover {
     transform: scale(1.02);
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    -webkit-transform: scale(1.02);
-    -moz-transform: scale(1.02);
-    -ms-transform: scale(1.02);
-    -o-transform: scale(1.02);
 }
 .testimonials{
     text-align: center;
@@ -261,7 +257,6 @@
     font-weight: bold;
     font-size: 16px;
 }
-/* Contact Section */
 .contact-section {
     padding: 50px 20px;
     background-color: #E8F5E9; 
@@ -277,12 +272,10 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }
-
-/* Left Side: Contact Info */
 .contact-info {
     width: 50%;
     padding: 30px;
-    background-color: #FF9800; /* Orange */
+    background-color: #FF9800; 
     color: white;
 }
 
@@ -308,14 +301,13 @@
     margin-right: 10px;
 }
 
-/* Right Side: Contact Form */
 .contact-form {
     width: 50%;
     padding: 30px;
 }
 
 .contact-form h2 {
-    color: #FF9800; /* Orange */
+    color: #FF9800; 
 }
 
 .contact-form input,
@@ -330,7 +322,7 @@
 .contact-form button {
     width: 100%;
     padding: 12px;
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50; 
     color: white;
     border: none;
     font-size: 16px;
@@ -342,14 +334,12 @@
     background-color: #388E3C;
 }
 
-/* Response Message */
 #responseMessage {
     margin-top: 10px;
     font-size: 14px;
 }
-/* About Us Section */
 .about-us {
-    background-color: #E8F5E9; /* Light Green */
+    background-color: #E8F5E9; 
     padding: 50px 20px;
 }
 .about-content-heading{
@@ -364,8 +354,6 @@
     align-items: center;
     gap: 30px;
 }
-
-/* Left: Image */
 .about-image {
     width: 50%;
 }
@@ -374,17 +362,15 @@
     width: 100%;
     border-radius: 10px;
 }
-
-/* Right: Content */
 .about-content {
     width: 50%;
-    color: #2E7D32; /* Dark Green */
+    color: #2E7D32; 
 }
 
 .about-content h1 {
     font-size: 28px;
     margin-bottom: 10px;
-    color: #FF9800; /* Orange */
+    color: #FF9800; 
 }
 
 .about-content h2 {
@@ -408,7 +394,6 @@
     margin-bottom: 8px;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
@@ -420,7 +405,6 @@
     }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .contact-container {
         flex-direction: column;
@@ -441,4 +425,17 @@
         transition: 0.3s ease-in-out;
         margin-left: 40px;
       }
+}
+@media screen and (max-width: 425px) {
+    .container-flex {
+        flex-direction: column; 
+        align-items: center; 
+    }
+
+    .hero, .results {
+        flex: 1; 
+        width: 100%;
+        max-width: 90%; 
+        padding: 30px 15px; 
+    }
 }
