@@ -9,27 +9,29 @@
     <link rel="stylesheet" href="./styles/styles.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container">
-            <img src="images/EatWise_Ai_logo.png"alt="eatwise-logo" class="logo"/>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
+    <nav class="navbar navbar-expand-lg navbar-light bg-dark">
+        <div class="container d-flex justify-content-between">
+            <!-- Logo and Brand -->
+        <a class="navbar-brand d-flex align-items-center" href="#home">
+            <img src="images/EatWise_Ai_logo.png" alt="Eat Wise.AI Logo" width="150" height="150" class="me-2">
+            <span class="fw-bold text-light fs-4">Eat Wise.AI</span>
+        </a>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link text-light" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="#">About us</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="#">Contact us</a></li>
+                    <li class="nav-item active"><a class="nav-link text-dark" href="#home">Home</a></li>
+                    <li class="nav-item active"><a class="nav-link text-dark" href="#about-us">About Us</a></li>
+                    <li class="nav-item active"><a class="nav-link text-dark" href="#contact-us">Contact Us</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container-flex">
+    <div class="container-flex" id="home">
         <div class="hero">
             <h1>Analyze Your Food!</h1>
             <p>Upload an image <strong>or</strong> enter ingredients manually.</p>
-            <input type="file" id="foodImage" class="form-control mb-3">
+            <input type="file" id="imageUpload" accept="image/*" onchange="extractTextFromImage()" class="form-control mb-3">
+            <img id="previewImage" src="" style="max-width: 100%; display: none; align-items: center;">
             <p><strong>or</strong></p>
             <textarea id="ingredientsInput" class="form-control mb-3" placeholder="Enter ingredients (e.g., sugar, salt, oil)" ></textarea>
             <button class="btn-analyze" onclick="analyzeFood()">Analyze</button>
@@ -45,7 +47,7 @@
         </div>
     </div>
     <!-- about us section starting -->
-    <section class="about-us">
+    <section class="about-us" id="about-us">
         <div class="container">
             <!-- Left Side: Image -->
             <div class="about-image">
@@ -123,7 +125,7 @@
             </div>
              </div>
             <!-- testimonials section ending -->
-            <section class="contact-section">
+            <section class="contact-section" id="contact-us">
                 <div class="contact-container">
                     <!-- Left Side: Contact Info -->
                     <div class="contact-info">
@@ -161,35 +163,95 @@
     </footer>
 
     <script>
-        async function analyzeFood() {
-            const ingredients = document.getElementById("ingredientsInput").value.trim();
-            const analyzeButton = document.querySelector(".btn-analyze");
-            const loadingSpinner = document.getElementById("loadingSpinner");
-            const resultsSection = document.getElementById("resultsSection");
-            const healthScoreIcon = document.getElementById("healthScoreIcon");
-            const resultsContainer = document.getElementById("resultsSection");
-            resultsContainer.classList.remove("visible"); // Hide results before new analysis
-            if (!ingredients.trim()) {
-                alert("Please enter ingredients.");
-                return;
+        async function extractTextFromImage() {
+    const fileInput = document.getElementById("imageUpload");
+    const previewImage = document.getElementById("previewImage");
+    const ingredientsInput = document.getElementById("ingredientsInput");
+
+    if (fileInput.files.length === 0) {
+        alert("Please upload an image.");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async function (event) {
+        const base64Image = event.target.result.split(",")[1]; // Extract base64 data
+
+        previewImage.src = event.target.result;
+        previewImage.style.display = "block"; // Show preview
+
+        const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate?key=apikey`;
+
+        const requestBody = {
+            requests: [
+                {
+                    image: { content: base64Image },
+                    features: [{ type: "TEXT_DETECTION" }]
+                }
+            ]
+        };
+
+        try {
+            const response = await fetch(visionApiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestBody)
+            });
+
+            const data = await response.json();
+            console.log("OCR Response:", data);
+
+            if (data.responses && data.responses[0].textAnnotations) {
+                const extractedText = data.responses[0].textAnnotations[0].description;
+                ingredientsInput.value = extractedText; // Auto-fill ingredients input
+            } else {
+                alert("No text detected in the image.");
+                previewImage.style.display = "none";
+                imageUpload.value = "";
             }
-            // Disable button to prevent multiple submissions
-            analyzeButton.disabled = true;
-            analyzeButton.innerText = "Analyzing...";
-            // Show loading spinner
-            loadingSpinner.style.display = "inline-block";
-            // Clear previous results
-            document.getElementById("healthScore").innerText = "-";
-            document.getElementById("warnings").innerText = "-";
-            document.getElementById("alternatives").innerText = "-";
-            // Hide results while loading
-            resultsSection.style.display = "none";
-            healthScoreIcon.className = "fas fa-star"; // Reset icon color
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to extract text from image.");
+            previewImage.style.display = "none";
+            imageUpload.value = "";
+        }
+    };
 
-            const apiKey = "AIzaSyCH9UMD7vJ_iuzYFmyT2VGrdyqQqd9cVjE"; // Replace with actual API key
-            const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${apiKey}`;
+    reader.readAsDataURL(file);
+}
 
-            let requestBody = {
+        async function analyzeFood() {
+    const ingredients = document.getElementById("ingredientsInput").value.trim();
+    const analyzeButton = document.querySelector(".btn-analyze");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const resultsSection = document.getElementById("resultsSection");
+    const healthScoreIcon = document.getElementById("healthScoreIcon");
+    const previewImage = document.getElementById("previewImage");
+    const imageUpload = document.getElementById("imageUpload");
+
+    if (!ingredients) {
+        alert("Please enter ingredients.");
+        return;
+    }
+    // Hide the preview image when analysis starts
+    previewImage.style.display = "none";
+    imageUpload.value = ""; 
+    analyzeButton.disabled = true;
+    analyzeButton.innerText = "Analyzing...";
+    loadingSpinner.style.display = "inline-block";
+    // Clear previous results
+    document.getElementById("healthScore").innerText = "-";
+    document.getElementById("warnings").innerText = "-";
+    document.getElementById("alternatives").innerText = "-";
+    resultsSection.style.display = "none";
+
+    try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=AIzaSyCH9UMD7vJ_iuzYFmyT2VGrdyqQqd9cVjE`; // Replace with your API key
+
+        // 🔹 **Full Request Body**
+        let requestBody = {
                 contents: [
                     {
                         role: "model",
@@ -197,132 +259,133 @@
                             {
                                 text: `You are an AI nutrition assistant named Eat Wise AI. Your goal is to analyze food ingredients and rate their healthiness based on WHO, USDA, and OpenFoodFacts guidelines.
 
-Objective:
-- Analyze food ingredients.
-- Assign a health score (0-10).
-- Warn about unhealthy components.
-- Suggest alternatives.
+                                    Objective:
+                                    - Analyze food ingredients.
+                                    - Assign a health score (0-10).
+                                    - Warn about unhealthy components.
+                                    - Suggest alternatives.
 
-Constraints:
-1. Provide concise, structured, and evidence-based responses.
-2. Avoid assumptions beyond ingredient analysis.
-3. Stick to well-documented nutrition guidelines.
+                                    Constraints:
+                                    1. Provide concise, structured, and evidence-based responses.
+                                    2. Avoid assumptions beyond ingredient analysis.
+                                    3. Stick to well-documented nutrition guidelines.
 
-Persona:
-- Supportive and professional nutrition expert.
-- User-friendly and informative.
+                                    Persona:
+                                    - Supportive and professional nutrition expert.
+                                    - User-friendly and informative.
 
-Tone:
-- Encouraging, neutral, and informative.
+                                    Tone:
+                                    - Encouraging, neutral, and informative.
 
-Context:
-- Users want to understand the health impact of food ingredients.
+                                    Context:
+                                    - Users want to understand the health impact of food ingredients.
 
-Step-by-Step Reasoning:
-1. Identify and categorize ingredients.
-2. Compare with health guidelines.
-3. Compute a health score (0-10).
-4. Provide structured feedback.
+                                    Step-by-Step Reasoning:
+                                    1. Identify and categorize ingredients.
+                                    2. Compare with health guidelines.
+                                    3. Compute a health score (0-10).
+                                    4. Provide structured feedback.
 
-Expected Response Format:
-- **Health Score:** X/10
-- **Warnings:** [List of concerns]
-- **Alternatives:** [Healthier options]
+                                    Expected Response Format:
+                                    - **Health Score:** X/10
+                                    - **Warnings:** [List of concerns]
+                                    - **Alternatives:** [Healthier options]
 
-Examples:
-1️⃣ **Input:** "Sugar, Palm Oil, Artificial Flavors"
-       - **Output:** "Health Score: 3/10, Warnings: [High sugar, artificial additives], Alternatives: [Olive oil, honey, natural flavors]"
+                                    Examples:
+                                    1️⃣ **Input:** "Sugar, Palm Oil, Artificial Flavors"
+                                        - **Output:** "Health Score: 3/10, Warnings: [High sugar, artificial additives], Alternatives: [Olive oil, honey, natural flavors]"
 
-2️⃣ **Input:** "Oats, Almonds, Honey"
-       - **Output:** "Health Score: 9/10, Warnings: [None], Alternatives: [None needed]"`
-                            }
-                        ]
-                    },
-                    {
-                        role: "user",
-                        parts: [
-                            {
-                                text: `Analyze the following food ingredients:
+                                    2️⃣ **Input:** "Oats, Almonds, Honey"
+                                        - **Output:** "Health Score: 9/10, Warnings: [None], Alternatives: [None needed]"`
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            role: "user",
+                                                            parts: [
+                                                                {
+                                                                    text: `Analyze the following food ingredients:
 
-Ingredients: ${ingredients}
+                                    Ingredients: ${ingredients}
 
-Provide output strictly in the structured format mentioned above.`
-                            }
-                        ]
-                    }
-                ]
-            };
+                                    Provide output strictly in the structured format mentioned above.`
+                                                                }
+                                                            ]
+                                                        }
+                                                    ]
+                                                };
 
-            console.log("Request Body:", JSON.stringify(requestBody, null, 2));
+        console.log("Request Body:", JSON.stringify(requestBody, null, 2));
 
-            try {
-                const response = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(requestBody)
-                });
+        const response = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(requestBody)
+        });
 
-                const data = await response.json();
-                console.log("Full API Response:", data); // Debugging line
-
-                if (data && Array.isArray(data.candidates) && data.candidates.length > 0) {
-                    const candidate = data.candidates[0]; // Get the first candidate
-                    if (candidate.content && Array.isArray(candidate.content.parts) && candidate.content.parts.length > 0) {
-                        const responseText = candidate.content.parts[0].text; // Get the text from the first part
-                    console.log("Raw API Response:", responseText);
-                    // Split response by lines
-                    const resultLines = responseText.split("\n").map(line => line.trim()).filter(line => line !== "");
-
-                    // Extract relevant sections
-                    const healthScoreMatch = responseText.match(/\*\*Health Score:\*\*\s*(\d+)/);
-                    console.log("HealthScore", healthScoreMatch);
-                    const warnings = resultLines.find(line => line.startsWith("**Warnings:**")) || "N/A";
-                    const alternatives = resultLines.find(line => line.startsWith("**Alternatives:**")) || "N/A";
-                    const healthScore = healthScoreMatch ? parseInt(healthScoreMatch[1]) : null;
-                    console.log("HealthScore", healthScore);
-                    // Remove bold markers and update UI
-                    document.getElementById("healthScore").innerText = healthScore;
-                    document.getElementById("warnings").innerText = warnings.replace("**Warnings:**", "").trim().replace(/\[|\]/g, "");
-                    document.getElementById("alternatives").innerText = alternatives.replace("**Alternatives:**", "").trim().replace(/\[|\]/g, "");
-                    // Update health score icon color
-                    healthScoreIcon.classList.remove("text-danger", "text-warning", "text-success");
-                    if (healthScore !== null) {
-                        if (healthScore <= 3) {
-                            healthScoreIcon.classList.add("text-danger"); // Red
-                        } else if (healthScore <= 6) {
-                            healthScoreIcon.classList.add("text-warning"); // Yellow
-                        } else {
-                            healthScoreIcon.classList.add("text-success"); // Green
-                        }
-                    }
-                    // Show results
-                    resultsSection.style.display = "block";
-                } else {
-                    document.getElementById("healthScore").innerText = "Error analyzing food.";
-                    document.getElementById("warnings").innerText = "-";
-                    document.getElementById("alternatives").innerText = "-";
-
-                    resultsSection.style.display = "block";
-                }
-
-            } catch (error) {
-                console.error("Error:", error);
-                document.getElementById("healthScore").innerText = "Failed to fetch results.";
-                document.getElementById("warnings").innerText = "-";
-                document.getElementById("alternatives").innerText = "-";
-            }
-            // Hide loading spinner and enable button after API response
-            loadingSpinner.style.display = "none";
-            analyzeButton.disabled = false;
-            analyzeButton.innerText = "Analyze";
-
-            setTimeout(() => {
-                resultsContainer.classList.add("visible"); // Fade in results
-            }, 100);
+        if (!response.ok) {
+            let errorMessage = `HTTP ${response.status} - ${response.statusText}`;
+            const errorResponse = await response.text();
+            console.error("Error Details:", errorResponse);
+            alert(`API Error: ${errorMessage}`);
+            throw new Error(errorMessage);
         }
+
+        const data = await response.json();
+        console.log("API Response:", data);
+
+        // Ensure response format is valid
+        if (!data || !Array.isArray(data.candidates) || data.candidates.length === 0) {
+        alert("Unexpected API response format. Check console.");
+        return;
     }
+
+        const responseText = data.candidates[0]?.content?.parts?.[0]?.text || "";
+        console.log("Raw Response Text:", responseText);
+
+        // 🔹 **Extract Health Score, Warnings, and Alternatives**
+        const healthScoreMatch = responseText.match(/\*\*Health Score:\*\*\s*(\d+)/);
+        const healthScore = healthScoreMatch ? parseInt(healthScoreMatch[1]) : "-";
+
+        const warningsMatch = responseText.match(/\*\*Warnings:\*\*\s*(.+)/);
+        const warnings = warningsMatch ? warningsMatch[1].replace(/\[|\]/g, "") : "None";
+
+        const alternativesMatch = responseText.match(/\*\*Alternatives:\*\*\s*(.+)/);
+        const alternatives = alternativesMatch ? alternativesMatch[1].replace(/\[|\]/g, "") : "None";
+
+        // 🔹 **Update UI with extracted data**
+        document.getElementById("healthScore").innerText = healthScore;
+        document.getElementById("warnings").innerText = warnings;
+        document.getElementById("alternatives").innerText = alternatives;
+
+        // 🔹 **Update Health Score Icon Color**
+        healthScoreIcon.classList.remove("text-danger", "text-warning", "text-success");
+        if (healthScore !== "-") {
+            if (healthScore <= 3) {
+                healthScoreIcon.classList.add("text-danger"); // Red
+            } else if (healthScore <= 6) {
+                healthScoreIcon.classList.add("text-warning"); // Yellow
+            } else {
+                healthScoreIcon.classList.add("text-success"); // Green
+            }
+        }
+
+        resultsSection.classList.remove("hidden"); // Ensure it's visible
+        resultsSection.style.display = "block";
+    } catch (error) {
+        console.error("Error:", error);
+        alert("An error occurred while analyzing. Please try again later.");
+        // Remove uploaded image preview & reset file input if error occurs
+        previewImage.style.display = "none";
+        imageUpload.value = ""; // Reset file input
+    } finally {
+        loadingSpinner.style.display = "none";
+        analyzeButton.disabled = false;
+        analyzeButton.innerText = "Analyze";
+    }
+}
+
+
         function resetAnalysis() {
             document.getElementById("ingredientsInput").value = "";
             document.getElementById("resultsSection").style.display = "none";
